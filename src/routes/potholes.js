@@ -19,7 +19,6 @@ const getLocation = async (latitude, longitude,) => {
 }
 
 
-// POST: Create new pothole
 router.post("/", async (req, res) => {
   try {
     const {
@@ -31,7 +30,6 @@ router.post("/", async (req, res) => {
       image_url,
     } = req.body;
 
-    // Validate required fields
     if (
       !latitude ||
       !longitude ||
@@ -45,7 +43,7 @@ router.post("/", async (req, res) => {
     }
 
     const place = await getLocation(latitude, longitude);
-    // Create new pothole document
+
     const pothole = new Pothole({
       latitude,
       longitude,
@@ -56,7 +54,6 @@ router.post("/", async (req, res) => {
       image_url,
     });
 
-    // Save to database
     await pothole.save();
 
     res.status(201).json({
@@ -69,7 +66,15 @@ router.post("/", async (req, res) => {
   }
 });
 
-// GET: Fetch all potholes with pagination
+router.get("/", async (req, res) => {
+  try {
+    const potholes = await Pothole.find();
+    res.json(potholes);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching potholes" });
+  }
+});
+
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -95,7 +100,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET: Fetch pothole by ID
 router.get("/:id", async (req, res) => {
   try {
     const pothole = await Pothole.findOne({
@@ -111,7 +115,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// GET: Filter potholes by severity
 router.get("/filter/severity/:severity", async (req, res) => {
   try {
     const potholes = await Pothole.find({
@@ -124,7 +127,6 @@ router.get("/filter/severity/:severity", async (req, res) => {
   }
 });
 
-// GET: Find nearby potholes
 router.get("/nearby/search", async (req, res) => {
   try {
     const { lat, lng, maxDistance = 5000 } = req.query;
