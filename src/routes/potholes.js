@@ -156,4 +156,20 @@ router.get("/nearby/search", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedPothole = await Pothole.findByIdAndDelete(id);
+
+    if (!deletedPothole) {
+      return res.status(404).json({ error: "Pothole not found" });
+    }
+
+    res.status(200).json({ message: "Pothole deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting pothole:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 export default router;
